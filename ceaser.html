@@ -150,11 +150,31 @@
     function checkDecryption() {
         const ciphertext = document.getElementById('ciphertext').value;
         const userPlaintext = document.getElementById('plaintext').value;
+        const messageDiv = document.getElementById('message');
+
+        // Check if both fields are empty
+        if (!ciphertext && !userPlaintext) {
+            messageDiv.textContent = 'Please enter ciphertext and plaintext to check.';
+            messageDiv.className = 'message error';
+            return;
+        }
+
+        // Check if only ciphertext is empty
+        if (!ciphertext) {
+            messageDiv.textContent = 'Please enter ciphertext.';
+            messageDiv.className = 'message error';
+            return;
+        }
+
+        // Check if only plaintext is empty
+        if (!userPlaintext) {
+            messageDiv.textContent = 'Please enter plaintext.';
+            messageDiv.className = 'message error';
+            return;
+        }
 
         // Decrypt the ciphertext using Caesar cipher (key = -3)
         const decryptedText = shiftDecrypt(ciphertext);
-
-        const messageDiv = document.getElementById('message');
 
         // Compare decrypted text with user input
         if (userPlaintext.toUpperCase() === decryptedText.toUpperCase()) {
