@@ -98,6 +98,12 @@
             color: #f85149;
             font-weight: bold;
         }
+
+        #timer {
+            font-size: 1.2em;
+            color: #58a6ff;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -107,22 +113,67 @@
 <div class="container">
     <h1>Caesar Cipher Decryption</h1>
 
+    <div id="timer">Time Remaining: 01:30</div>
+    <button onclick="startTimer()">Start Timer</button>
+
     <label for="ciphertext">Enter Encrypted Text:</label>
-    <input type="text" id="ciphertext" placeholder="Enter ciphertext" />
+    <input type="text" id="ciphertext" placeholder="Enter ciphertext" disabled />
 
     <label for="plaintext">Your Decrypted Message:</label>
-    <input type="text" id="plaintext" placeholder="Enter your guess" />
+    <input type="text" id="plaintext" placeholder="Enter your guess" disabled />
 
-    <button onclick="checkDecryption()">Check Decryption</button>
+    <button onclick="checkDecryption()" disabled>Check Decryption</button>
 
     <div id="message" class="message"></div>
     
     <footer>
-        <p>Part of the <span class="highlight">Cyber Defense Training</span> - Learn encryption techniques to secure your data.</p>
+        <p>Part of <span class="highlight">Nabeih</span> - Learn encryption techniques to secure your data.</p>
     </footer>
 </div>
 
 <script>
+    // Timer variables
+    let timeLeft = 90;
+    let timerInterval;
+
+    // Function to start the countdown timer
+    function startTimer() {
+        // Prevent multiple timers from running simultaneously
+        if (timerInterval) {
+            clearInterval(timerInterval);
+        }
+
+        timeLeft = 90;
+        document.getElementById('timer').textContent = `Time Remaining: 01:30`;
+
+        // Enable input fields and button
+        document.getElementById('ciphertext').disabled = false;
+        document.getElementById('plaintext').disabled = false;
+        document.querySelector('button[onclick="checkDecryption()"]').disabled = false;
+
+        timerInterval = setInterval(function() {
+            timeLeft--;
+
+            let minutes = Math.floor(timeLeft / 60);
+            let seconds = timeLeft % 60;
+            let formattedSeconds = seconds < 10 ? `0${seconds}` : seconds;
+            document.getElementById('timer').textContent = `Time Remaining: 0${minutes}:${formattedSeconds}`;
+
+            // When time runs out
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('timer').textContent = 'Time is up!';
+                document.getElementById('message').textContent = 'You lose, bad in crypto!!';
+                document.getElementById('message').className = 'message error';
+
+                // Disable input fields and button
+                document.getElementById('ciphertext').disabled = true;
+                document.getElementById('plaintext').disabled = true;
+                document.querySelector('button[onclick="checkDecryption()"]').disabled = true;
+            }
+        }, 1000); // Update every second
+    }
+
     // Function to decrypt using Caesar shift of -3
     function shiftDecrypt(ciphertext, shift = -3) {
         let result = '';
@@ -178,8 +229,15 @@
 
         // Compare decrypted text with user input
         if (userPlaintext.toUpperCase() === decryptedText.toUpperCase()) {
-            messageDiv.textContent = 'Correct! The decryption matches the original text.';
+            clearInterval(timerInterval);  // Stop the timer
+            document.getElementById('timer').textContent = 'You guessed it!';
+            messageDiv.textContent = 'Omg, good at crypto!';
             messageDiv.className = 'message success';
+
+            // Disable input fields and button
+            document.getElementById('ciphertext').disabled = true;
+            document.getElementById('plaintext').disabled = true;
+            document.querySelector('button[onclick="checkDecryption()"]').disabled = true;
         } else {
             messageDiv.textContent = 'Wrong! The decryption doesn\'t match the original text.';
             messageDiv.className = 'message error';
